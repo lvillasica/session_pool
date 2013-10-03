@@ -95,12 +95,74 @@ class Aviator::Test
     describe '::configure' do
 
       it 'sets the class\'s configuration' do
-        subject.configure default_options
+        opts = {
+                 config_file: 'the quick',
+                 environment: 'brown fox',
+                 log_file:    'jumps over',
+                 redis_host:  'the lazy',
+                 redis_port:  'dog'
+               }
 
-        subject.configuration.each{ |key, value| value.must_equal default_options[key] }
+        subject.configure opts
+
+        subject.configuration.each{ |key, value| value.must_equal opts[key] }
       end
 
     end # describe '::configure'
+
+
+    describe '::get' do
+
+      it 'aliases ::[]' do
+        key = 'somestring'
+
+        subject[key] = session
+
+        subject.get(key).dump.must_equal subject[key].dump
+      end
+
+    end # describe '::get'
+
+
+    describe '::get_or_create' do
+
+      it 'loads a session if the associated session dump exists' do
+        key = 'loadsessionkey'
+
+        subject[key] = session
+
+        subject.get_or_create(key).dump.must_equal session.dump
+      end
+
+
+      it 'creates a new session if one with the given key does not exist' do
+        key = 'createsessionkey'
+
+        subject.get_or_create(key).wont_be_nil
+        subject.get_or_create(key).class.must_equal session.class
+      end
+
+
+      it 'authenticates newly created sessions' do
+        key = 'authenticatesnewsessionkey'
+
+        session = subject.get_or_create(key)
+
+        session.authenticated?.must_equal true
+      end
+
+
+      it 'passes on a block to the newly create session if provided' do
+        key = 'passessonblocktosessionkey'
+
+        session = subject.get_or_create(key) do |c|
+          c.username = 'anything'
+        end
+
+        session.block_provided?.must_equal true
+      end
+
+    end
 
   end
 

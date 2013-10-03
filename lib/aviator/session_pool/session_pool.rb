@@ -23,6 +23,7 @@ module Aviator
 
         session.validate ? session : nil
       end
+      alias :get :[]
 
 
       # Not thread safe! BUT good enough for
@@ -36,6 +37,22 @@ module Aviator
       end
       attr_reader :configuration
       alias :c :configuration
+
+
+      def get_or_create(key, &block)
+        # If session is invalid or does not exist, self[] will return nil
+        unless session = self[key]
+          config = configuration.dup
+          [:redis_host, :redis_port].each{|k| config.delete k }
+          session = Aviator::Session.new(config)
+
+          session.authenticate &block
+
+          self[key] = session
+        end
+
+        session
+      end
 
 
       private

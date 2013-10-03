@@ -94,23 +94,4 @@ admin = Aviator::SessionPool.get_or_create('admin')
 
 # Use the admin session
 Aviator::SessionPool.get_or_create('admin').identity_service.request(:list_tenants, endpoint_type: :admin)
-
-
-
-#=========================
-# HOW get_or_create WORKS
-#=========================
-
-def get_or_create(session_id, &block)
-  # If session is invalid or does not exist, self[] will return nil
-  unless session = self[session_id]
-    session = Session.new(config_file: config_file, environment: environment, log_file: log_file_path)
-
-    session.authenticate &block
- 
-    self[session_id] = session
-  end
-  
-  session
-end
 ```

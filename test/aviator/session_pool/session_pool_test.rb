@@ -143,6 +143,23 @@ class Aviator::Test
       end
 
 
+      it 'creates a new session if one with the given key is invalid' do
+        key = 'invalidsessionkey'
+
+        subject[key] = session
+        
+        
+        Aviator::Session.class_eval do
+          def validate
+            false
+          end
+        end
+        
+
+        subject.get_or_create(key).dump.wont_equal session.dump
+      end
+
+
       it 'authenticates newly created sessions' do
         key = 'authenticatesnewsessionkey'
 

@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["mmaglana@gmail.com", "aj.dillera@gmail.com"]
   spec.description   = %q{ A library for managing multiple Aviator sessions }
   spec.summary       = %q{ A library for managing multiple Aviator sessions }
-  spec.homepage      = "http://github.io/aviator/session_pool"
+  spec.homepage      = "http://github.com/aviator/session_pool"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)

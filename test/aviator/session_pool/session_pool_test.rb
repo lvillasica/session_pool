@@ -147,14 +147,14 @@ class Aviator::Test
         key = 'invalidsessionkey'
 
         subject[key] = session
-        
-        
+
+
         Aviator::Session.class_eval do
           def validate
             false
           end
         end
-        
+
 
         subject.get_or_create(key).dump.wont_equal session.dump
       end
@@ -177,6 +177,45 @@ class Aviator::Test
         end
 
         session.block_provided?.must_equal true
+      end
+
+    end # describe '::get_or_create'
+
+
+    describe '::set_current' do
+
+      it 'sets the current session' do
+        key = 'setcurrentsessionkey'
+
+        s = subject.get_or_create(key)
+
+        subject.set_current(key)
+
+        subject.get_current.dump.must_equal s.dump
+      end
+      
+      
+      it 'raises an error when the key does not exist' do
+        key = 'setcurrentnonexistentsessionkey'
+
+        the_method = lambda do
+          subject.set_current(key)
+        end
+
+        the_method.must_raise Aviator::SessionPool::SessionNotFoundError
+      end
+
+    end
+
+
+    describe '::get_current' do
+
+      it 'raises an error if set_current was no previously called' do
+        the_method = lambda do
+          subject.get_current
+        end
+
+        the_method.must_raise Aviator::SessionPool::CurrentSessionNotDefinedError
       end
 
     end

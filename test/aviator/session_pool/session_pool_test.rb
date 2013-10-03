@@ -32,6 +32,10 @@ class Aviator::Test
 
     before do
       redis.flushdb
+
+      # Reload Session mocks each time
+      load 'support/aviator_session_mock.rb'
+
       subject.configure default_options
     end
 
@@ -49,7 +53,7 @@ class Aviator::Test
         stored.must_equal session.dump
       end
 
-    end
+    end # describe '::[]='
 
 
     describe '::[]' do
@@ -78,13 +82,6 @@ class Aviator::Test
         end
 
         subject[key].must_be_nil
-
-        # Undo the change to the mocked class
-        Aviator::Session.class_eval do
-          def validate
-            true
-          end
-        end
       end
 
 
@@ -92,7 +89,7 @@ class Aviator::Test
         subject['boguskey'].must_be_nil
       end
 
-    end
+    end # describe '::[]'
 
 
     describe '::configure' do

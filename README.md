@@ -2,6 +2,9 @@
 
 Experimental library for managing [Aviator](http://aviator.github.io/www) sessions.
 
+[![Build Status](https://travis-ci.org/aviator/session_pool.png?branch=master)](https://travis-ci.org/aviator/session_pool)
+[![Coverage Status](https://coveralls.io/repos/aviator/session_pool/badge.png)](https://coveralls.io/r/aviator/session_pool)
+
 ```ruby
 require 'aviator'
 require 'aviator/session_pool'

@@ -51,6 +51,7 @@ module Aviator
       attr_reader :configuration
       alias :c :configuration
 
+
       def create(key, &block)
         config = configuration.dup
         [:redis_host, :redis_port].each{|k| config.delete k }
@@ -60,6 +61,7 @@ module Aviator
 
         self[key] = session
       end
+
 
       # WARNING: Since get_current uses a class instance variable, it will contain
       # a value between http requests whether set_current was called or not for as long

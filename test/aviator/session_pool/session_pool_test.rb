@@ -111,6 +111,19 @@ class Aviator::Test
     end # describe '::configure'
 
 
+    describe '::create' do
+
+      it 'creates the session when called' do
+        key = 'loadsessionkey'
+
+        subject[key] = session
+
+        subject.create(key).dump.wont_equal session.dump
+      end
+
+    end # describe '::create'
+
+
     describe '::get' do
 
       it 'aliases ::[]' do
@@ -122,6 +135,19 @@ class Aviator::Test
       end
 
     end # describe '::get'
+
+
+    describe '::get_current' do
+
+      it 'raises an error if set_current was no previously called' do
+        the_method = lambda do
+          subject.get_current
+        end
+
+        the_method.must_raise Aviator::SessionPool::CurrentSessionNotDefinedError
+      end
+
+    end # describe '::get_current'
 
 
     describe '::get_or_create' do
@@ -193,8 +219,8 @@ class Aviator::Test
 
         subject.get_current.dump.must_equal s.dump
       end
-      
-      
+
+
       it 'raises an error when the key does not exist' do
         key = 'setcurrentnonexistentsessionkey'
 
@@ -205,20 +231,7 @@ class Aviator::Test
         the_method.must_raise Aviator::SessionPool::SessionNotFoundError
       end
 
-    end
-
-
-    describe '::get_current' do
-
-      it 'raises an error if set_current was no previously called' do
-        the_method = lambda do
-          subject.get_current
-        end
-
-        the_method.must_raise Aviator::SessionPool::CurrentSessionNotDefinedError
-      end
-
-    end
+    end # describe '::set_current'
 
   end
 

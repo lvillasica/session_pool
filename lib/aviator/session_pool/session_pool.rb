@@ -2,6 +2,8 @@ require 'redis'
 
 module Aviator
   class SessionPool
+    #only make it last for 30 mins
+    DEFAULT_EXPIRY = 1800
 
     class CurrentSessionNotDefinedError < StandardError
       def initialize
@@ -21,11 +23,14 @@ module Aviator
     class << self
 
       def []=(key, session)
-        session_key = build_key(key)
-
-        redis.set(session_key, session.dump)
+        store(key, session, configuration[:expiry])
       end
 
+      def store(key, session, expiry = nil)
+        session_key = build_key(key)
+        redis.setex(session_key, (expiry || DEFAULT_EXPIRY).to_i, session.dump)
+        session
+      end
 
       def [](key)
         session_dump = redis.get(build_key(key))
@@ -42,7 +47,7 @@ module Aviator
       # Not thread safe! BUT good enough for
       # a single-threaded web application.
       def configure(options)
-        @configuration = options
+        @configuration = {expiry: DEFAULT_EXPIRY}.merge(options)
 
         # So that the redis configuration will
         # be reloaded on the next ::redis call
@@ -52,14 +57,19 @@ module Aviator
       alias :c :configuration
 
 
-      def create(key, &block)
-        config = configuration.dup
-        [:redis_host, :redis_port].each{|k| config.delete k }
+      def create(key, options = {},&block)
+        config = configuration.inject({}) do |acc, (k, value)|
+          acc[k] = value if k.to_s !~ /^redis/
+          acc
+        end
+
+        expiry = config.delete(:expiry)
+        expiry = options[:expiry] || expiry
         session = Aviator::Session.new(config)
 
         session.authenticate &block
-
-        self[key] = session
+        store(key, session, expiry)
+        session
       end
 
 
@@ -73,7 +83,7 @@ module Aviator
 
       def get_or_create(key, &block)
         # If session is invalid or does not exist, self[] will return nil
-        self.get(key) || self.create(key, &block)
+        self.get(key) || self.create(key, {},&block)
       end
 
 
@@ -92,8 +102,17 @@ module Aviator
         "#{ REDIS_KEY_PREFIX }.#{ key }"
       end
 
+      #allow to choose which db and password
+      def redis_config
+        c.inject({}) do |acc, (key, value)|
+          key = key.to_s
+          acc[key.to_s.gsub(/^redis/,'').to_sym] = value if key.to_s =~ /^redis/
+          acc
+        end
+      end
+
       def redis
-        @redis ||= Redis.new(host: c[:redis_host], port: c[:redis_port])
+        @redis ||= Redis.new(redis_config)
       end
 
     end

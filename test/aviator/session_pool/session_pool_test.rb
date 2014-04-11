@@ -10,7 +10,8 @@ class Aviator::Test
         environment: :production,
         log_file:    'path/to/aviator.log',
         redis_host:  'localhost',
-        redis_port:   6379
+        redis_port:   6379,
+        expiry: 1800 #seconds
       }
     end
 
@@ -100,7 +101,8 @@ class Aviator::Test
                  environment: 'brown fox',
                  log_file:    'jumps over',
                  redis_host:  'the lazy',
-                 redis_port:  'dog'
+                 redis_port:  'dog',
+                 expiry: 1800
                }
 
         subject.configure opts
@@ -213,7 +215,7 @@ class Aviator::Test
       it 'sets the current session' do
         key = 'setcurrentsessionkey'
 
-        s = subject.get_or_create(key)
+        s = subject.create(key)
 
         subject.set_current(key)
 

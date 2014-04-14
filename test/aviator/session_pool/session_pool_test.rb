@@ -4,14 +4,18 @@ class Aviator::Test
 
   describe 'aviator/session_pool/session_pool' do
 
+
     def default_options
+      mutiplier = 60 * 60
+      hours = 48
+      default_expiry = hours * mutiplier
       {
         config_file: 'path/to/aviator.yml',
         environment: :production,
         log_file:    'path/to/aviator.log',
         redis_host:  'localhost',
         redis_port:   6379,
-        expiry: 1800 #seconds
+        expiry: default_expiry #seconds
       }
     end
 

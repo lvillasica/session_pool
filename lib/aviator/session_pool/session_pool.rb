@@ -2,8 +2,9 @@ require 'redis'
 
 module Aviator
   class SessionPool
-    #only make it last for 30 mins
-    DEFAULT_EXPIRY = 1800
+    mutiplier = 60 * 60
+    hours = 48
+    DEFAULT_EXPIRY = hours * mutiplier
 
     class CurrentSessionNotDefinedError < StandardError
       def initialize

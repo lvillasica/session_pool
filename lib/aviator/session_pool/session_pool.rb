@@ -106,7 +106,7 @@ module Aviator
       def redis_config
         c.inject({}) do |acc, (key, value)|
           key = key.to_s
-          acc[key.to_s.gsub(/^redis/,'').to_sym] = value if key.to_s =~ /^redis/
+          acc[key.to_s.gsub(/^redis_/,'').to_sym] = value if key.to_s =~ /^redis_/
           acc
         end
       end

@@ -130,6 +130,21 @@ class Aviator::Test
     end # describe '::create'
 
 
+    describe '::delete' do
+
+      it 'deletes the session dump in redis' do
+        key = 'tobedeletedsessionkey'
+
+        subject[key] = session
+
+        subject.delete(key)
+
+        redis.get(subject.send(:build_key, key)).must_be_nil
+      end
+
+    end # describe '::delete'
+
+
     describe '::get' do
 
       it 'aliases ::[]' do

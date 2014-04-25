@@ -73,6 +73,11 @@ module Aviator
         session
       end
 
+      def delete(key)
+        session_key = build_key(key)
+        redis.del(session_key)
+      end
+
 
       # WARNING: Since get_current uses a class instance variable, it will contain
       # a value between http requests whether set_current was called or not for as long

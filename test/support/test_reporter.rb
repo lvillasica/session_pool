@@ -1,7 +1,7 @@
 require "minitest/reporters"
 
 module Aviator
-class Test
+class Test  < MiniTest::Spec
 
   class SpecReporter < MiniTest::Reporters::SpecReporter
 

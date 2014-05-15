@@ -28,8 +28,14 @@ module Aviator
       end
 
       def store(key, session, expiry = nil)
-        session_key = build_key(key)
-        redis.setex(session_key, (expiry || DEFAULT_EXPIRY).to_i, session.dump)
+        session_key     = build_key(key)
+        default_expiry  = DEFAULT_EXPIRY
+
+        if auth_info = session.auth_info
+          default_expiry = (auth_info.expiry.to_time.utc - Time.now.utc)
+        end
+
+        redis.setex(session_key, (expiry || default_expiry).to_i, session.dump)
         session
       end
 
